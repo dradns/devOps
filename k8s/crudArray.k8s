@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: crud-array
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: crud-array
+  strategy:
+    rollingUpdate:
+      maxSurge: 3
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: crud-array
+    spec:
+      nodeSelector:
+        "beta.kubernetes.io/os": linux
+      containers:
+      - name: crud-array-container
+        image: dradns/crud_array
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: 250m
+          limits:
+            cpu: 500m
+        env:
+        - name: "SERVICE_SORT_DOMAIN"
+          value: "service-sort"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: crud-array
+spec:
+  type: NodePort
+  ports:
+  - port: 80
+  selector:
+    app: crud-array

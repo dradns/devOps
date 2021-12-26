@@ -1,0 +1,14 @@
+version: "3.9"
+services:
+  crud_array:
+    image: 'crud_array'
+  service_sort:
+    image: 'service_sort'
+  redis:
+    image: 'redis:alpine'
+    ports:
+      - "8005:6379"
+  orchestrator:
+    image: 'orchestrator'
+    ports:
+      - "80:80"

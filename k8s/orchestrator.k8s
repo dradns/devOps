@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orchestrator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: orchestrator
+  strategy:
+    rollingUpdate:
+      maxSurge: 3
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: orchestrator
+    spec:
+      nodeSelector:
+        "beta.kubernetes.io/os": linux
+      containers:
+      - name: orchestrator-container
+        image: dradns/orchestrator:v1.1
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: 250m
+          limits:
+            cpu: 500m
+        env:
+        - name: "SERVICE_SORT_DOMAIN"
+          value: "service-sort"
+        - name: "CRUD_ARRAY_DOMAIN"
+          value: "crud-array"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: orchestrator
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+  selector:
+    app: orchestrator
